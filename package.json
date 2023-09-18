@@ -1,0 +1,19 @@
+{
+  "name": "movie-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": ".src/index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/santiagoferrerb/movie-app.git"
+  },
+  "author": "@santiagoferrerb",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/santiagoferrerb/movie-app/issues"
+  },
+  "homepage": "https://github.com/santiagoferrerb/movie-app#readme"
+}
