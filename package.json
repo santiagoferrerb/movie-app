@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/santiagoferrerb/movie-app/issues"
   },
-  "homepage": "https://github.com/santiagoferrerb/movie-app#readme"
+  "homepage": "https://github.com/santiagoferrerb/movie-app#readme",
+  "dependencies": {
+    "normalize.css": "^8.0.1"
+  }
 }
