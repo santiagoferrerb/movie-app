@@ -1,9 +1,14 @@
 trendingBtn.addEventListener('click', () => location.hash = '#trends');
+
 // searchFormBtn.addEventListener('click', () => {
 //     location.hash = '#search='+searchFormInput.value.toLowerCase();
 // });
+
 searchFormInput.addEventListener('keyup', () => location.hash ='#search='+searchFormInput.value.toLowerCase());
-arrowBtn.addEventListener('click', () => location.hash = '#home');
+arrowBtn.addEventListener('click', () => location.hash.includes('search')?location.hash='#home':history.back());
+
+logo.addEventListener('click', () => location.hash = '#home');
+
 
 window.addEventListener('DOMContentLoaded', navigator, false);
 window.addEventListener('hashchange', navigator, false);
@@ -29,7 +34,7 @@ function navigator() {
         homePage();
 
     }
-}
+};
 
 function homePage(){
     searchFormInput.value = '';
@@ -49,7 +54,7 @@ function homePage(){
 
     getTrendingMoviesPreview();
     getMoviesGenre();
-}
+};
 
 function trendsPage(){
 
@@ -72,7 +77,7 @@ function trendsPage(){
 
 
 
-}
+};
 
 function searchPage(){
 
@@ -85,7 +90,7 @@ function searchPage(){
     arrowBtn.classList.remove('inactive');
     arrowBtn.classList.remove('header-arrow--white');
     headerTitle.classList.add('inactive');
-    headerCategoryTitle.classList.remove('inactive');
+    headerCategoryTitle.classList.add('inactive');
     searchForm.classList.remove('inactive');
 
     trendingPreviewSection.classList.add('inactive');
@@ -93,11 +98,12 @@ function searchPage(){
     genericSection.classList.remove('inactive');
     movieDetailSection.classList.add('inactive');
 
-}
+};
 
 function moviePage(){
 
     getMovie(location.hash.split('=')[1]);
+    getSimilarMovies(location.hash.split('=')[1]);
 
     headerSection.classList.add('header-container--long');
     headerSection.style.background = '';
@@ -112,7 +118,7 @@ function moviePage(){
     genericSection.classList.add('inactive');
     movieDetailSection.classList.remove('inactive');
 
-}
+};
 
 function categoryPage(){
 
@@ -133,4 +139,4 @@ function categoryPage(){
     genericSection.classList.remove('inactive');
     movieDetailSection.classList.add('inactive');
 
-}
+};
