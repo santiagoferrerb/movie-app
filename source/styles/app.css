@@ -110,19 +110,19 @@ body {
 
 :root {
   --purple-light-1: #FBFAFB;
-  --purple-light-2: #EEEAF2;
-  --purple-medium-1: #AA83C8;
-  --purple-medium-2: #8B48BF;
-  --purple-medium-3: #5C218A;
-  --purple-dark-1: #3E0F64;
-  --purple-dark-2: #2A0646;
+  --purple-light-2: #caf0f8;
+  --purple-medium-1: #00b4d8;
+  --purple-medium-2: #0096c7;
+  --purple-medium-3: #0077b6;
+  --purple-dark-1: #023e8a;
+  --purple-dark-2: #03045e;
 
-  --yellow: #EECC75;
-  --green: #CAD297;
-  --aqua: #B7EAC5;
-  --lightBlue: #A2EEE5;
-  --darkBlue: #8EA2EA;
-  --red: #F09D9D;
+  --yellow: #FFEF00;
+  --green: #DFFF00;
+  --aqua: #0FFFFF;
+  --lightBlue: #00BFFF;
+  --darkBlue: #007BA7;
+  --red: #FF4F00;
 
   --font-family-titles: 'Dosis', sans-serif;
   --font-family-text: 'Red Hat Display', sans-serif;
@@ -383,7 +383,7 @@ button {
   color: transparent;
   /* TODO: cambiar color por ID de la categoría */
   background-color: var(--idColor);
-  border-radius: 8px;
+  border-radius: 50%;
   margin-right: 8px;
   width: 8px;
   height: 8px;
