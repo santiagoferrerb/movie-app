@@ -130,4 +130,4 @@ dist
 .pnp.*
 
 # Secrets.js (API)
-.secrets.js
+secrets.js
