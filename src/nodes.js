@@ -28,3 +28,6 @@ const movieDetailScore = document.querySelector('.movieDetail-score');
 
 const logo = document.querySelector('.logo');
 
+const fondo = document.querySelector('.fondo');
+
+const mensajeFondo = document.querySelector('.fondo-mensaje--h3');
