@@ -11,23 +11,53 @@ const api  =  axios.create({
 });
 
 // Utils
+
+const lazyLoader = new IntersectionObserver((entries) => {
+    entries.forEach( entry => {
+        // console.log(entry);
+        const srcUrl = entry.target.attributes[0].value;
+        // console.log(srcUrl);
+        entry.isIntersecting == true ? entry.target.src = srcUrl : "";
+    })
+});
+
+const scrollObserver = new IntersectionObserver(entry => {
+    if(location.hash.includes('#category')){
+    entry[0].isIntersecting == true && pagNum <= pagMax ? getPaginatedMoviesByCategory(location.hash.split('=')[1]): '';
+    } else if (location.hash.includes('#trends')) {
+        entry[0].isIntersecting == true && pagNum <= pagMax ? getPaginatedTrendingMovies(): '';
+    }
+})
+
+scrollObserver.observe(fondo);
+
+function lazySet() {
+    const movieImg = document.querySelectorAll('.movie-img');
+    const movieImgArr = Array.from(movieImg);
+
+    movieImgArr.forEach(item => lazyLoader.observe(item));
+};
+
 function htmlMovieLoad(array) {
     return array.map(item =>
                 `
                 <div class="movie-container">
                     <img
-                    src="https://image.tmdb.org/t/p/w300/${item.poster_path}"
+                    data-src="https://image.tmdb.org/t/p/w300/${item.poster_path}"
                     class="movie-img"
                     alt="${item.original_title}"
                     />
                 </div>
                 `
-                ).join('');
+            ).join('');
 };
 
 function hashMovie(containers, movies){
-    containers.forEach(container => container.addEventListener('click', () => location.hash = `#movie=${movies[containers.indexOf(container)].id}`))
-}
+    containers.forEach(container => {
+        container.addEventListener('click', () => location.hash = `#movie=${movies[containers.indexOf(container)].id}`)
+    })
+};
+
 // API Llamados
 async function getTrendingMoviesPreview() {
     const {data} = await api('trending/movie/day');
@@ -42,6 +72,8 @@ async function getTrendingMoviesPreview() {
     movieContainersArr.forEach(item => item.addEventListener('click', () =>
         location.hash = `#movie=${movies[movieContainersArr.indexOf(item)].id}`
     ))
+
+    lazySet();
 };
 
 async function getMoviesGenre() {
@@ -67,24 +99,59 @@ async function getMoviesGenre() {
     ));
 };
 
-async function getMoviesByCategory(id) {
+// async function getMoviesByCategory(id) {
+//     const {data} = await api('discover/movie', {
+//         params : {
+//             with_genres: id,
+//         },
+//     });
+
+//     const movies = data.results;
+
+//     genericSection.innerHTML = htmlMovieLoad(movies);
+
+//     const movieContainers = document.querySelectorAll('.genericList-container .movie-container')
+//     const movieContainersArr = Array.from(movieContainers);
+
+
+//     hashMovie(movieContainersArr, movies);
+//     lazySet();
+
+
+
+// };
+
+async function getPaginatedMoviesByCategory(id) {
+    pagNum == 1 ? genericSection.innerHTML= '' : '';
+
+    console.log(pagNum, id);
+
     const {data} = await api('discover/movie', {
         params : {
             with_genres: id,
-        },
-    });
+            page : pagNum,
+            }
+        });
 
-    const movies = data.results;
+        pagNum++;
 
-    genericSection.innerHTML = htmlMovieLoad(movies);
+        const movies = data.results
+        movies.forEach(movie => movie.poster_path === null ? movie.poster_path = '/w3rXpniqssYcppC5UwuQfP1scVB.jpg' : '');
 
-    const movieContainers = document.querySelectorAll('.genericList-container .movie-container')
-    const movieContainersArr = Array.from(movieContainers);
+        moviesTotal.push(...movies);
+        console.log(moviesTotal);
+
+        genericSection.innerHTML += htmlMovieLoad(movies);
+
+        const movieContainers = document.querySelectorAll('.genericList-container .movie-container');
+        const movieContainersArr = Array.from(movieContainers);
+
+        hashMovie(movieContainersArr, moviesTotal);
+
+        lazySet();
 
 
-    hashMovie(movieContainersArr, movies);
-
-};
+}
 
 async function getMoviesBySearch(query) {
     const {data} = await api('search/movie', {
@@ -102,20 +169,65 @@ async function getMoviesBySearch(query) {
     const movieContainersArr = Array.from(movieContainers);
 
     hashMovie(movieContainersArr, movies);
+    lazySet();
 
 };
 
-async function getTrendingMovies() {
-    const {data} = await api('trending/movie/day');
-    const movies = data.results;
 
-    genericSection.innerHTML = htmlMovieLoad(movies);
+// async function getTrendingMovies() {
+//     pagNum == 1 ? genericSection.innerHTML = '' :'';
+//     const {data} = await api('trending/movie/day');
+//     const movies = data.results;
 
+//     genericSection.innerHTML += htmlMovieLoad(movies);
+
+//     const movieContainers = document.querySelectorAll('.genericList-container .movie-container');
+//     const movieContainersArr = Array.from(movieContainers);
+
+//     hashMovie(movieContainersArr,movies);
+//     lazySet();
+//     console.log(pagNum);
+//     pagNum > 1 ? backPaginatedTrending() : '';
+
+// };
+
+
+async function getPaginatedTrendingMovies() {
+
+    pagNum == 1 ? genericSection.innerHTML= '' : '';
+
+        console.log(pagNum);
+
+        const {data} = await api('trending/movie/day', {
+            params: {
+                page: pagNum,
+            }
+        });
+
+        pagNum++;
+
+        const movies = data.results;
+
+        moviesTotal.push(...movies);
+
+        genericSection.innerHTML += htmlMovieLoad(movies);
+
+        const movieContainers = document.querySelectorAll('.genericList-container .movie-container');
+        const movieContainersArr = Array.from(movieContainers);
+
+        hashMovie(movieContainersArr, moviesTotal);
+
+        lazySet();
+};
+
+function backPaginatedTrending() {
+    console.log('funciono');
     const movieContainers = document.querySelectorAll('.genericList-container .movie-container');
-    const movieContainersArr = Array.from(movieContainers);
+        const movieContainersArr = Array.from(movieContainers);
 
-    hashMovie(movieContainersArr,movies);
-};
+    hashMovie(movieContainersArr.slice((pagNum*-20)+20),moviesTotal);
+    lazySet();
+}
 
 async function getMovie(id) {
     const {data : movie} = await api('movie/'+id);
@@ -147,10 +259,10 @@ async function getMovie(id) {
 async function getSimilarMovies(id) {
     const {data} = await api(`movie/${id}/recommendations`);
 
-    console.log(`movie/${id}/recommendations`);
+    // console.log(`movie/${id}/recommendations`);
 
     const movies = data.results;
-    console.log(movies);
+    // console.log(movies);
 
     const random = Math.floor(Math.random()*movies.length);
 

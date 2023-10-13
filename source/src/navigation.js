@@ -1,3 +1,8 @@
+let pagNum = 1;
+let infiniteScroll;
+let moviesTotal = [];
+let pagMax=10;
+
 trendingBtn.addEventListener('click', () => location.hash = '#trends');
 
 // searchFormBtn.addEventListener('click', () => {
@@ -14,9 +19,8 @@ window.addEventListener('DOMContentLoaded', navigator, false);
 window.addEventListener('hashchange', navigator, false);
 
 function navigator() {
+
     window.scroll(0,0);
-    // document.documentElement.scrollTop = 0;
-    // document.body.scrollTop = 0;
 
     if(location.hash.startsWith('#trends')) {
         trendsPage();
@@ -34,6 +38,7 @@ function navigator() {
         homePage();
 
     }
+
 };
 
 function homePage(){
@@ -51,14 +56,17 @@ function homePage(){
     categoriesPreviewSection.classList.remove('inactive');
     genericSection.classList.add('inactive');
     movieDetailSection.classList.add('inactive');
+    fondo.classList.add('inactive');
+
+    genericSection.innerHTML='';
+    pagNum=1;
 
     getTrendingMoviesPreview();
     getMoviesGenre();
+    moviesTotal=[];
 };
 
 function trendsPage(){
-
-    getTrendingMovies();
 
     headerSection.classList.remove('header-container--long');
     headerSection.style.background = '';
@@ -73,9 +81,12 @@ function trendsPage(){
     genericSection.classList.remove('inactive');
     movieDetailSection.classList.add('inactive');
 
+    fondo.classList.remove('inactive');
+
+    mensajeFondo.classList.remove('inactive');
+
+
     headerCategoryTitle.innerText = '🔥 Tendencias';
-
-
 
 };
 
@@ -98,6 +109,8 @@ function searchPage(){
     genericSection.classList.remove('inactive');
     movieDetailSection.classList.add('inactive');
 
+
+
 };
 
 function moviePage(){
@@ -117,12 +130,17 @@ function moviePage(){
     categoriesPreviewSection.classList.add('inactive');
     genericSection.classList.add('inactive');
     movieDetailSection.classList.remove('inactive');
+    fondo.classList.add('inactive');
+
+    mensajeFondo.classList.remove('inactive');
+
+
 
 };
 
 function categoryPage(){
 
-    getMoviesByCategory(location.hash.split('=')[1]);
+    // getPaginatedMoviesByCategory(location.hash.split('=')[1]);
 
     headerCategoryTitle.innerText = decodeURI(location.hash.split('=')[2]);
 
@@ -138,5 +156,9 @@ function categoryPage(){
     categoriesPreviewSection.classList.add('inactive');
     genericSection.classList.remove('inactive');
     movieDetailSection.classList.add('inactive');
+    fondo.classList.remove('inactive');
+
+
+    // infiniteScroll = getPaginatedMoviesByCategory;
 
 };
