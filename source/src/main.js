@@ -122,8 +122,9 @@ async function getMoviesGenre() {
 // };
 
 async function getPaginatedMoviesByCategory(id) {
-    pagNum == 1 ? genericSection.innerHTML= '' : '';
 
+    pagNum == 1 ? genericSection.innerHTML= '' : '';
+    
     console.log(pagNum, id);
 
     const {data} = await api('discover/movie', {
@@ -140,6 +141,8 @@ async function getPaginatedMoviesByCategory(id) {
 
         moviesTotal.push(...movies);
         console.log(moviesTotal);
+
+        
 
         genericSection.innerHTML += htmlMovieLoad(movies);
 
