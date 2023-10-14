@@ -441,8 +441,8 @@ button {
 }
 
 .genericList-container--loading{
-  width: 175px;
-  height: 263px;
+  width: 165px;
+  min-height: 225px;
   background: var(--purple-light-2);
   animation: loading-skeleton infinite 1s;
   border-radius: 8px;
