@@ -5,10 +5,41 @@ const api  =  axios.create({
     },
     params: {
         'api_key': API_KEY,
-        'language': 'es',
+        'language': navigator.language,
     },
 
 });
+
+function likedMoviesList(){
+    const item = JSON.parse(localStorage.getItem('liked_movies'));
+    let movies;
+
+    if(item) {
+        movies = item;
+    } else {
+        movies = {};
+    }
+
+    return movies
+};
+
+function likeMovie(movie) {
+
+    console.log(movie);
+
+    const likedMovies = likedMoviesList();
+    console.log(likedMovies);
+
+    if (likedMovies[movie.id]) {
+        //removerlo de LS
+        likedMovies[movie.id] = undefined;
+    } else {
+        //agregarlo en LS
+        likedMovies[movie.id] = movie;
+    }
+
+    localStorage.setItem('liked_movies',JSON.stringify(likedMovies));
+};
 
 // Utils
 
@@ -29,7 +60,13 @@ const scrollObserver = new IntersectionObserver(entry => {
     }
 })
 
+const showLikedMovies = new IntersectionObserver( entry => {
+    // console.log(entry);
+    // entry[0].isIntersecting == true ?
+})
+
 scrollObserver.observe(fondo);
+showLikedMovies.observe(likeMovieList);
 
 function lazySet() {
     const movieImg = document.querySelectorAll('.movie-img');
@@ -47,6 +84,29 @@ function htmlMovieLoad(array) {
                     class="movie-img"
                     alt="${item.original_title}"
                     />
+                    <h3 class = "inactive">${item.id}</h3>
+                    <div class="btn-like">
+                        <span class="material-icons favorite"> favorite </span>
+                     </div>
+                </div>
+                `
+            ).join('');
+};
+
+function htmlMovieLoadLiked(array) {
+    return array.map(item =>
+                `
+                <div class="movie-container">
+                    <img
+                    src="https://image.tmdb.org/t/p/w300/${item.poster_path}"
+                    class="movie-img"
+                    alt="${item.original_title}"
+                    />
+                    <h3 class = "inactive">${item.id}</h3>
+
+                    <div class="btn-unlike">
+                        <span class="material-icons unfavorite"> delete </span>
+                    </div>
                 </div>
                 `
             ).join('');
@@ -66,7 +126,7 @@ async function getTrendingMoviesPreview() {
 
     trendingMoviesPreviewList.innerHTML = htmlMovieLoad(movies.slice(0,6));
 
-    const movieContainers = document.querySelectorAll('.trendingPreview-movieList .movie-container');
+    const movieContainers = document.querySelectorAll('.trendingPreview-movieList .movie-container .movie-img');
     const movieContainersArr = Array.from(movieContainers);
 
     movieContainersArr.forEach(item => item.addEventListener('click', () =>
@@ -74,6 +134,25 @@ async function getTrendingMoviesPreview() {
     ))
 
     lazySet();
+
+    const likeButtons = document.querySelectorAll('.movie-container .btn-like');
+    const likeButtonsArr = Array.from(likeButtons);
+
+    likeButtonsArr.forEach((item) => {
+        const movieId = item.parentElement.querySelector('h3').innerText;
+
+        likedMoviesList()[movieId] && item.classList.add('btn-like--selected');
+    });
+
+
+    likeButtonsArr.forEach(item => item.addEventListener('click',() => {
+        //agregar pelicula a local storage
+        likeMovie(movies[likeButtonsArr.indexOf(item)]);
+
+        //cambiar diseño del boton
+        item.classList.toggle('btn-like--selected');
+        getLikedMovies();
+    } ));
 };
 
 async function getMoviesGenre() {
@@ -124,7 +203,7 @@ async function getMoviesGenre() {
 async function getPaginatedMoviesByCategory(id) {
 
     pagNum == 1 ? genericSection.innerHTML= '' : '';
-    
+
     console.log(pagNum, id);
 
     const {data} = await api('discover/movie', {
@@ -142,19 +221,41 @@ async function getPaginatedMoviesByCategory(id) {
         moviesTotal.push(...movies);
         console.log(moviesTotal);
 
-        
 
         genericSection.innerHTML += htmlMovieLoad(movies);
 
-        const movieContainers = document.querySelectorAll('.genericList-container .movie-container');
+        const movieContainers = document.querySelectorAll('.genericList-container .movie-container .movie-img');
         const movieContainersArr = Array.from(movieContainers);
 
         hashMovie(movieContainersArr, moviesTotal);
 
         lazySet();
 
+        const likeButtons = document.querySelectorAll('.genericList-container .movie-container .btn-like');
+        const likeButtonsArr = Array.from(likeButtons);
 
-}
+        console.log(likeButtonsArr);
+
+        likeButtonsArr.forEach((item) => {
+            const movieId = item.parentElement.querySelector('h3').innerText;
+
+            if(likedMoviesList()[movieId]) {
+                item.classList.add('btn-like--selected');
+            };
+        });
+
+        likeButtonsArr.forEach(item => {
+            item.addEventListener('click', () => {
+            //agregar a local storage
+            likeMovie(moviesTotal[likeButtonsArr.indexOf(item)]);
+
+            //cambiar clase
+            item.classList.toggle('btn-like--selected');
+            getLikedMovies();
+            } )
+        })
+
+};
 
 async function getMoviesBySearch(query) {
     const {data} = await api('search/movie', {
@@ -168,11 +269,23 @@ async function getMoviesBySearch(query) {
 
     genericSection.innerHTML = htmlMovieLoad(movies);
 
-    const movieContainers = document.querySelectorAll('.genericList-container .movie-container');
+    const movieContainers = document.querySelectorAll('.genericList-container .movie-container .movie-img');
     const movieContainersArr = Array.from(movieContainers);
 
     hashMovie(movieContainersArr, movies);
     lazySet();
+
+    const likeButtons = document.querySelectorAll('.movie-container .btn-like');
+    const likeButtonsArr = Array.from(likeButtons);
+
+    likeButtonsArr.forEach(item => {
+        item.addEventListener('click', () => {
+        //agregar a local storage
+
+        //cambiar clase
+        item.classList.toggle('btn-like--selected');
+        } )
+    })
 
 };
 
@@ -199,7 +312,7 @@ async function getPaginatedTrendingMovies() {
 
     pagNum == 1 ? genericSection.innerHTML= '' : '';
 
-        console.log(pagNum);
+        // console.log(pagNum);
 
         const {data} = await api('trending/movie/day', {
             params: {
@@ -212,25 +325,41 @@ async function getPaginatedTrendingMovies() {
         const movies = data.results;
 
         moviesTotal.push(...movies);
+        // console.log(moviesTotal);
 
         genericSection.innerHTML += htmlMovieLoad(movies);
 
-        const movieContainers = document.querySelectorAll('.genericList-container .movie-container');
+        const movieContainers = document.querySelectorAll('.genericList-container .movie-container .movie-img');
         const movieContainersArr = Array.from(movieContainers);
 
         hashMovie(movieContainersArr, moviesTotal);
-
         lazySet();
-};
 
-function backPaginatedTrending() {
-    console.log('funciono');
-    const movieContainers = document.querySelectorAll('.genericList-container .movie-container');
-        const movieContainersArr = Array.from(movieContainers);
 
-    hashMovie(movieContainersArr.slice((pagNum*-20)+20),moviesTotal);
-    lazySet();
-}
+        const likeButtons = document.querySelectorAll('.genericList-container .movie-container .btn-like');
+        const likeButtonsArr = Array.from(likeButtons);
+
+
+        likeButtonsArr.forEach((item) => {
+            const movieId = item.parentElement.querySelector('h3').innerText;
+
+            if(likedMoviesList()[movieId]) {
+                item.classList.add('btn-like--selected');
+            };
+        });
+
+
+        likeButtonsArr.forEach(item => item.addEventListener('click',() => {
+            //agregar pelicula a local storage
+            likeMovie(moviesTotal[likeButtonsArr.indexOf(item)]);
+
+            //cambiar diseño del boton
+            item.classList.toggle('btn-like--selected');
+            getLikedMovies();
+        }));
+
+    };
+
 
 async function getMovie(id) {
     const {data : movie} = await api('movie/'+id);
@@ -291,3 +420,31 @@ async function getSimilarMovies(id) {
         location.hash = `#movie=${movies[movieContainersArr.indexOf(item)].id}`
     ))
 };
+
+//Consumir LocalStorage
+
+function getLikedMovies() {
+    const likedMovies = likedMoviesList();
+    const likedMoviesArr = Object.values(likedMovies)
+
+    likeMovieList.innerHTML = htmlMovieLoadLiked(likedMoviesArr);
+
+    const movieContainers = document.querySelectorAll('.like-movieList .movie-container .movie-img');
+    const movieContainersArr = Array.from(movieContainers);
+
+    hashMovie(movieContainersArr, likedMoviesArr);
+    lazySet();
+
+    const unlikeButtons = document.querySelectorAll('.like-movieList .movie-container .btn-unlike');
+    const unlikeButtonsArr = Array.from(unlikeButtons);
+
+    unlikeButtonsArr.forEach(item => item.addEventListener('click',() => {
+
+        likeMovie(likedMoviesArr[unlikeButtonsArr.indexOf(item)]);
+
+        getLikedMovies();
+        getPaginatedTrendingMovies();
+        getTrendingMoviesPreview();
+    } ));
+
+}

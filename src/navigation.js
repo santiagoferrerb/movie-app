@@ -1,7 +1,7 @@
 let pagNum = 1;
 let infiniteScroll;
 let moviesTotal = [];
-let pagMax=10;
+let pagMax=3;
 
 trendingBtn.addEventListener('click', () => location.hash = '#trends');
 
@@ -15,10 +15,10 @@ arrowBtn.addEventListener('click', () => location.hash.includes('search')?locati
 logo.addEventListener('click', () => location.hash = '#home');
 
 
-window.addEventListener('DOMContentLoaded', navigator, false);
-window.addEventListener('hashchange', navigator, false);
+window.addEventListener('DOMContentLoaded', navigation, false);
+window.addEventListener('hashchange', navigation, false);
 
-function navigator() {
+function navigation() {
 
     window.scroll(0,0);
 
@@ -58,12 +58,18 @@ function homePage(){
     movieDetailSection.classList.add('inactive');
     fondo.classList.add('inactive');
 
+    mensajeFondo.classList.add('inactive');
+
     genericSection.innerHTML='';
     pagNum=1;
 
     getTrendingMoviesPreview();
     getMoviesGenre();
     moviesTotal=[];
+
+    likeSection.classList.remove('inactive');
+
+    getLikedMovies();
 };
 
 function trendsPage(){
@@ -85,8 +91,9 @@ function trendsPage(){
 
     mensajeFondo.classList.remove('inactive');
 
-
     headerCategoryTitle.innerText = '🔥 Tendencias';
+
+    likeSection.classList.add('inactive');
 
 };
 
@@ -108,6 +115,8 @@ function searchPage(){
     categoriesPreviewSection.classList.add('inactive');
     genericSection.classList.remove('inactive');
     movieDetailSection.classList.add('inactive');
+
+    likeSection.classList.add('inactive');
 
 
 
@@ -134,6 +143,8 @@ function moviePage(){
 
     mensajeFondo.classList.remove('inactive');
 
+    likeSection.classList.add('inactive');
+
 
 
 };
@@ -158,7 +169,8 @@ function categoryPage(){
     movieDetailSection.classList.add('inactive');
     fondo.classList.remove('inactive');
 
+    mensajeFondo.classList.remove('inactive');
 
-    // infiniteScroll = getPaginatedMoviesByCategory;
+    likeSection.classList.add('inactive');
 
 };
